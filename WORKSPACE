@@ -28,3 +28,38 @@ envoy_python_dependencies()
 load("//bazel:dependency_imports.bzl", "envoy_dependency_imports")
 
 envoy_dependency_imports()
+
+new_local_repository(
+    name = "openssl",
+    path = "/usr",
+    build_file = "BUILD.openssl",
+)
+new_local_repository(
+    name = "clang",
+    path = "/opt/llvm/",
+    build_file_content ="""
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+licenses(["notice"])  # Apache 2
+
+cc_library(
+    name = "clang_lib",
+    hdrs = glob([
+      "include/**/*",
+    ]),
+    srcs = [
+      "lib/libclang-cpp.so",
+      "lib/libclang-cpp.so.14",
+      "lib/libclang.so.13",
+      "lib/libclangAST.a",
+      "lib/libclangFrontend.a",
+      "lib/libclangTooling.a",
+      "lib/libclangBasic.a",
+      "lib/libclangLex.a",
+    ],
+    includes = ["include"],
+    linkopts = ["-Llib", "-lclang"],
+    visibility = ["//visibility:public"],
+)
+    """,
+)

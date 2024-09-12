@@ -664,6 +664,7 @@ int main(int argc, const char **argv) {
 
   for (int i = 1; i < argc; i++) {
     std::string arg = argv[i];
+    std::cout<< "arg: " << arg << std::endl;
     if ((arg == "--src-path") && ((++i < argc) || usage(-1))) {
       opt::srcpaths.insert (std::filesystem::canonical(argv[i]));
     }
@@ -764,6 +765,7 @@ int main(int argc, const char **argv) {
         str << "#include \"" << opt::prefix << "/" << hdr << "\"" << std::endl;
       }
     }
+    std::cout<< " " << subts.str() << " :-: "<<files.str()<<std::endl;
     std::system((std::string("sed -i ") + subts.str() + files.str()).c_str());
   }
 

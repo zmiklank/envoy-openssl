@@ -75,3 +75,10 @@ package_group(
         "//mobile/...",
     ],
 )
+
+package_group(
+    name = "bssl-compat",
+    packages = [
+        "//bssl-compat/...",
+    ],
+)
