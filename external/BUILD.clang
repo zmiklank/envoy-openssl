@@ -1,0 +1,17 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+licenses(["notice"])  # Apache 2
+
+cc_import(
+    name = clang_lib,
+    shared_library  = glob([
+      "18/lib/**/*.so",
+    ]),
+    static_library  = glob([
+      "18/lib/**/*.a",
+    ]),
+    hdrs = glob([
+      "18/include/**/*.h",
+    ]),
+    visibility = ["//visibility:public"],
+)

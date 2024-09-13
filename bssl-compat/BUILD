@@ -34,6 +34,9 @@ genrule(
         "//bssl-compat/prefixer:prefixer",
         "@clang//:clang_lib"
     ],
+    tools = [
+        "//bssl-compat/prefixer:prefixer",
+    ],
     outs = [
         "source/ossl.c",
         "include/ossl.h",
@@ -42,29 +45,146 @@ genrule(
     cmd = """ \
       LD_LIBRARY_PATH=/opt/llvm/lib/ \
       bazel-out/k8-fastbuild/bin/bssl-compat/prefixer/prefixer \
-      --src-path /usr/include/openssl/ \
+      --src-path /usr/include/ \
       --src-incl \"openssl/*.h\" \
       --src-skip openssl/asn1_mac.h \
       --src-skip \"openssl/opensslconf-*.h\" \
       --verbose \
-      --output . \
-      --prefix include/ossl/openssl \
+      --output $(RULEDIR) \
+      --prefix ossl \
       """,
-    tools = ["//bssl-compat/prefixer:prefixer"],
 )
       #$(locations //bssl-compat/prefixer:prefixer)
 
-# Generate bssl files which depend on ossl files
-#genrule(
-#    name = "bssl_gen",
-#    outs = [
-#        "include/ossl.h",
-#    ],
-#    deps = [
-#    "//bssl-compat:ossl_gen",
-#    ],
-#    cmd = "touch .",  # Replace this with the actual command to generate bssl files
-#)
+filegroup(
+    name = "bssl_patchfiles",
+    srcs = glob([
+        "patch/*",
+    ]),
+)
+
+genrule(
+    name = "bssl_gen_headers",
+    tools = [
+        "//bssl-compat:tools/uncomment.sh",
+        "//bssl-compat:tools/generate.h.sh",
+        "//bssl-compat:bssl_patchfiles",
+    ],
+    srcs = [
+      glob(["patches/**"]),
+      "third_party/boringssl/src/include/openssl/aead.h",
+      "third_party/boringssl/src/include/openssl/aes.h",
+      "third_party/boringssl/src/include/openssl/arm_arch.h",
+      "third_party/boringssl/src/include/openssl/asn1.h",
+      "third_party/boringssl/src/include/openssl/asn1_mac.h",
+      "third_party/boringssl/src/include/openssl/asn1t.h",
+      "third_party/boringssl/src/include/openssl/base64.h",
+      "third_party/boringssl/src/include/openssl/base.h",
+      "third_party/boringssl/src/include/openssl/bio.h",
+      "third_party/boringssl/src/include/openssl/blake2.h",
+      "third_party/boringssl/src/include/openssl/blowfish.h",
+      "third_party/boringssl/src/include/openssl/bn.h",
+      "third_party/boringssl/src/include/openssl/buffer.h",
+      "third_party/boringssl/src/include/openssl/buf.h",
+      "third_party/boringssl/src/include/openssl/bytestring.h",
+      "third_party/boringssl/src/include/openssl/cast.h",
+      "third_party/boringssl/src/include/openssl/chacha.h",
+      "third_party/boringssl/src/include/openssl/cipher.h",
+      "third_party/boringssl/src/include/openssl/cmac.h",
+      "third_party/boringssl/src/include/openssl/conf.h",
+      "third_party/boringssl/src/include/openssl/cpu.h",
+      "third_party/boringssl/src/include/openssl/crypto.h",
+      "third_party/boringssl/src/include/openssl/curve25519.h",
+      "third_party/boringssl/src/include/openssl/des.h",
+      "third_party/boringssl/src/include/openssl/dh.h",
+      "third_party/boringssl/src/include/openssl/digest.h",
+      "third_party/boringssl/src/include/openssl/dsa.h",
+      "third_party/boringssl/src/include/openssl/dtls1.h",
+      "third_party/boringssl/src/include/openssl/ecdh.h",
+      "third_party/boringssl/src/include/openssl/ecdsa.h",
+      "third_party/boringssl/src/include/openssl/ec.h",
+      "third_party/boringssl/src/include/openssl/ec_key.h",
+      "third_party/boringssl/src/include/openssl/engine.h",
+      "third_party/boringssl/src/include/openssl/e_os2.h",
+      "third_party/boringssl/src/include/openssl/err.h",
+      "third_party/boringssl/src/include/openssl/evp_errors.h",
+      "third_party/boringssl/src/include/openssl/evp.h",
+      "third_party/boringssl/src/include/openssl/ex_data.h",
+      "third_party/boringssl/src/include/openssl/hkdf.h",
+      "third_party/boringssl/src/include/openssl/hmac.h",
+      "third_party/boringssl/src/include/openssl/hpke.h",
+      "third_party/boringssl/src/include/openssl/hrss.h",
+      "third_party/boringssl/src/include/openssl/is_boringssl.h",
+      "third_party/boringssl/src/include/openssl/kdf.h",
+      "third_party/boringssl/src/include/openssl/lhash.h",
+      "third_party/boringssl/src/include/openssl/md4.h",
+      "third_party/boringssl/src/include/openssl/md5.h",
+      "third_party/boringssl/src/include/openssl/mem.h",
+      "third_party/boringssl/src/include/openssl/nid.h",
+      "third_party/boringssl/src/include/openssl/objects.h",
+      ],
+    outs = [
+      "include/openssl/aead.h",
+      "include/openssl/aes.h",
+      "include/openssl/arm_arch.h",
+      "include/openssl/asn1.h",
+      "include/openssl/asn1_mac.h",
+      "include/openssl/asn1t.h",
+      "include/openssl/base64.h",
+      "include/openssl/base.h",
+      "include/openssl/bio.h",
+      "include/openssl/blake2.h",
+      "include/openssl/blowfish.h",
+      "include/openssl/bn.h",
+      "include/openssl/buffer.h",
+      "include/openssl/buf.h",
+      "include/openssl/bytestring.h",
+      "include/openssl/cast.h",
+      "include/openssl/chacha.h",
+      "include/openssl/cipher.h",
+      "include/openssl/cmac.h",
+      "include/openssl/conf.h",
+      "include/openssl/cpu.h",
+      "include/openssl/crypto.h",
+      "include/openssl/curve25519.h",
+      "include/openssl/des.h",
+      "include/openssl/dh.h",
+      "include/openssl/digest.h",
+      "include/openssl/dsa.h",
+      "include/openssl/dtls1.h",
+      "include/openssl/ecdh.h",
+      "include/openssl/ecdsa.h",
+      "include/openssl/ec.h",
+      "include/openssl/ec_key.h",
+      "include/openssl/engine.h",
+      "include/openssl/e_os2.h",
+      "include/openssl/err.h",
+      "include/openssl/evp_errors.h",
+      "include/openssl/evp.h",
+      "include/openssl/ex_data.h",
+      "include/openssl/hkdf.h",
+      "include/openssl/hmac.h",
+      "include/openssl/hpke.h",
+      "include/openssl/hrss.h",
+      "include/openssl/is_boringssl.h",
+      "include/openssl/kdf.h",
+      "include/openssl/lhash.h",
+      "include/openssl/md4.h",
+      "include/openssl/md5.h",
+      "include/openssl/mem.h",
+      "include/openssl/nid.h",
+      "include/openssl/objects.h",
+      "out_script.txt"
+      ],
+    cmd = """
+      set -x
+      for header in $(SRCS); do
+        $(location tools/generate.h.sh) $(location tools/uncomment.sh) header "./include/openssl/$${header##*/}" > out_script.txt 2>&1
+      done
+      """,
+    visibility = ["//visibility:public"],
+)
+    #$(location tools/generate-all.sh) $(SRCS)
 
 cc_library(
 	name = "bssl-compat",
