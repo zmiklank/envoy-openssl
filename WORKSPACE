@@ -63,3 +63,8 @@ cc_library(
 )
     """,
 )
+
+local_repository(
+    name = "boringssl",
+    path = "third_party/boringssl/src",
+)
