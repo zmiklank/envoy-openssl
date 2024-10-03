@@ -1,5 +1,3 @@
-# BUILD
-
 cc_binary(
     name = "prefixer",
     srcs = ["prefixer.cpp"],
