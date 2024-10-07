@@ -31,40 +31,17 @@ envoy_dependency_imports()
 
 new_local_repository(
     name = "openssl",
-    path = "/usr",
+    path = "/usr/local/openssl-3.0.8",
     build_file = "BUILD.openssl",
 )
 new_local_repository(
     name = "clang",
     path = "/opt/llvm/",
-    build_file_content ="""
-load("@rules_cc//cc:defs.bzl", "cc_library")
-
-licenses(["notice"])  # Apache 2
-
-cc_library(
-    name = "clang_lib",
-    hdrs = glob([
-      "include/**/*",
-    ]),
-    srcs = [
-      "lib/libclang-cpp.so",
-      "lib/libclang-cpp.so.14",
-      "lib/libclang.so.13",
-      "lib/libclangAST.a",
-      "lib/libclangFrontend.a",
-      "lib/libclangTooling.a",
-      "lib/libclangBasic.a",
-      "lib/libclangLex.a",
-    ],
-    includes = ["include"],
-    linkopts = ["-Llib", "-lclang"],
-    visibility = ["//visibility:public"],
-)
-    """,
+    build_file = "BUILD.llvm"
 )
 
-local_repository(
-    name = "boringssl",
-    path = "third_party/boringssl/src",
-)
+# does not work , TO REMOVE
+#local_repository(
+#    name = "boringssl",
+#    path = "bssl-compat/third_party/boringssl/src",
+#)

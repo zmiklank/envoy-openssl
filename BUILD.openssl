@@ -5,8 +5,8 @@ licenses(["notice"])  # Apache 2
 cc_library(
     name = "openssl-lib",
     srcs = [
-        "libcrypto.so.1.1",
-        "libssl.so.1.1",
+        "lib64/libcrypto.so",
+        "lib64/libssl.so",
     ],
     linkstatic = False,
     visibility = ["//visibility:public"],

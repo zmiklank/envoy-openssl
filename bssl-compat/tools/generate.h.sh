@@ -19,6 +19,7 @@ PATCH_DIR="./bssl-compat/patch"
 [ -d "${PATCH_DIR}" ] || error "PATCH_DIR $PATCH_DIR does not exist"
 [ -f "${UNCOMMENT_SCRIPT}" ] || error "UNCOMMENT_SCRIPT $UNCOMMENT_SCRIPT does not exist"
 [ -f "${SRC_FILE}" ] || error "SRC_FILE $SRC_FILE does not exist"
+mkdir -p "$(dirname "$DST_DIR/$DST_FILE")"
 mkdir -p "$(dirname "$DST_FILE")"
 
 
