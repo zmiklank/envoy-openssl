@@ -166,9 +166,9 @@ genrule(
       LD_LIBRARY_PATH=/opt/llvm/lib/ \
       $(location //bssl-compat/prefixer:prefixer) \
       --src-path /usr/local/openssl-3.0.8/include/ \
-      --src-incl \"openssl/*.h\" \
+      --src-incl "openssl/*.h" \
       --src-skip openssl/asn1_mac.h \
-      --src-skip \"openssl/opensslconf-*.h\" \
+      --src-skip "openssl/opensslconf-*.h" \
       --verbose \
       --output $(RULEDIR) \
       --prefix ossl \
@@ -839,6 +839,7 @@ cc_library(
       "source/X509_VERIFY_PARAM_set_time_posix.cc",
 	],
 	hdrs = [
+        "include/ext/openssl/ssl.h",
         "include/ossl.h",
         "include/ossl/openssl/types.h",
         "include/ossl/openssl/aes.h",
