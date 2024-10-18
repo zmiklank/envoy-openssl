@@ -39,9 +39,3 @@ new_local_repository(
     path = "/opt/llvm/",
     build_file = "BUILD.llvm"
 )
-
-# does not work , TO REMOVE
-#local_repository(
-#    name = "boringssl",
-#    path = "bssl-compat/third_party/boringssl/src",
-#)

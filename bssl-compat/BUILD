@@ -177,6 +177,83 @@ genrule(
 
 
 genrule(
+    name = "bssl_gen_crypto_headers",
+    tools = [
+        "//bssl-compat:tools/uncomment.sh",
+        "//bssl-compat:tools/generate.h.sh",
+    ],
+    srcs = glob([
+      "third_party/boringssl/src/crypto/**/*.h",
+      "patch/**",
+      ]),
+    outs = [
+      "crypto/asn1/internal.h",
+      "crypto/bio/internal.h",
+      "crypto/bytestring/internal.h",
+      "crypto/chacha/internal.h",
+      "crypto/cipher_extra/internal.h",
+      "crypto/conf/conf_def.h",
+      "crypto/conf/internal.h",
+      "crypto/cpu_arm_linux.h",
+      "crypto/curve25519/curve25519_tables.h",
+      "crypto/curve25519/internal.h",
+      "crypto/des/internal.h",
+      "crypto/dsa/internal.h",
+      "crypto/ec_extra/internal.h",
+      "crypto/err/internal.h",
+      "crypto/evp/internal.h",
+      "crypto/fipsmodule/aes/internal.h",
+      "crypto/fipsmodule/bn/internal.h",
+      "crypto/fipsmodule/bn/rsaz_exp.h",
+      "crypto/fipsmodule/cipher/internal.h",
+      "crypto/fipsmodule/delocate.h",
+      "crypto/fipsmodule/dh/internal.h",
+      "crypto/fipsmodule/digest/internal.h",
+      "crypto/fipsmodule/digest/md32_common.h",
+      "crypto/fipsmodule/ec/internal.h",
+      "crypto/fipsmodule/ec/p256-nistz-table.h",
+      "crypto/fipsmodule/ec/p256-nistz.h",
+      "crypto/fipsmodule/ec/p256_table.h",
+      "crypto/fipsmodule/ecdsa/internal.h",
+      "crypto/fipsmodule/md5/internal.h",
+      "crypto/fipsmodule/modes/internal.h",
+      "crypto/fipsmodule/rand/fork_detect.h",
+      "crypto/fipsmodule/rand/getrandom_fillin.h",
+      "crypto/fipsmodule/rand/internal.h",
+      "crypto/fipsmodule/rsa/internal.h",
+      "crypto/fipsmodule/service_indicator/internal.h",
+      "crypto/fipsmodule/sha/internal.h",
+      "crypto/fipsmodule/tls/internal.h",
+      "crypto/hrss/internal.h",
+      "crypto/internal.h",
+      "crypto/lhash/internal.h",
+      "crypto/obj/obj_dat.h",
+      "crypto/pkcs7/internal.h",
+      "crypto/pkcs8/internal.h",
+      "crypto/poly1305/internal.h",
+      "crypto/pool/internal.h",
+      "crypto/test/abi_test.h",
+      "crypto/test/file_test.h",
+      "crypto/test/gtest_main.h",
+      "crypto/test/test_util.h",
+      "crypto/test/wycheproof_util.h",
+      "crypto/trust_token/internal.h",
+      "crypto/x509/internal.h",
+      "crypto/x509v3/ext_dat.h",
+      "crypto/x509v3/internal.h",
+      ],
+    cmd = """
+      #!/bin/bash
+      for header in $(SRCS); do
+        if [[ "$$header" != *"/patch/"* ]]; then
+          $(location //bssl-compat:tools/generate.h.sh) $(location //bssl-compat:tools/uncomment.sh) $$header "$${header#*/src/}" $(RULEDIR) `dirname $(location //bssl-compat:patch/bazel)`
+        fi
+      done
+      """, # TODO: the condition in cmd does not work
+    visibility = ["//visibility:public"],
+)
+
+genrule(
     name = "bssl_gen_headers",
     tools = [
         "//bssl-compat:tools/uncomment.sh",
@@ -184,7 +261,6 @@ genrule(
     ],
     srcs = glob([
       "third_party/boringssl/src/include/openssl/*.h",
-      "third_party/boringssl/src/crypto/**/*.h",
       "patch/**",
       ]),
     outs = [
@@ -269,69 +345,15 @@ genrule(
       "include/openssl/x509.h",
       "include/openssl/x509v3.h",
       "include/openssl/x509_vfy.h",
-      "crypto/asn1/internal.h",
-      "crypto/bio/internal.h",
-      "crypto/bytestring/internal.h",
-      "crypto/chacha/internal.h",
-      "crypto/cipher_extra/internal.h",
-      "crypto/conf/conf_def.h",
-      "crypto/conf/internal.h",
-      "crypto/cpu_arm_linux.h",
-      "crypto/curve25519/curve25519_tables.h",
-      "crypto/curve25519/internal.h",
-      "crypto/des/internal.h",
-      "crypto/dsa/internal.h",
-      "crypto/ec_extra/internal.h",
-      "crypto/err/internal.h",
-      "crypto/evp/internal.h",
-      "crypto/fipsmodule/aes/internal.h",
-      "crypto/fipsmodule/bn/internal.h",
-      "crypto/fipsmodule/bn/rsaz_exp.h",
-      "crypto/fipsmodule/cipher/internal.h",
-      "crypto/fipsmodule/delocate.h",
-      "crypto/fipsmodule/dh/internal.h",
-      "crypto/fipsmodule/digest/internal.h",
-      "crypto/fipsmodule/digest/md32_common.h",
-      "crypto/fipsmodule/ec/internal.h",
-      "crypto/fipsmodule/ec/p256-nistz-table.h",
-      "crypto/fipsmodule/ec/p256-nistz.h",
-      "crypto/fipsmodule/ec/p256_table.h",
-      "crypto/fipsmodule/ecdsa/internal.h",
-      "crypto/fipsmodule/md5/internal.h",
-      "crypto/fipsmodule/modes/internal.h",
-      "crypto/fipsmodule/rand/fork_detect.h",
-      "crypto/fipsmodule/rand/getrandom_fillin.h",
-      "crypto/fipsmodule/rand/internal.h",
-      "crypto/fipsmodule/rsa/internal.h",
-      "crypto/fipsmodule/service_indicator/internal.h",
-      "crypto/fipsmodule/sha/internal.h",
-      "crypto/fipsmodule/tls/internal.h",
-      "crypto/hrss/internal.h",
-      "crypto/internal.h",
-      "crypto/lhash/internal.h",
-      "crypto/obj/obj_dat.h",
-      "crypto/pkcs7/internal.h",
-      "crypto/pkcs8/internal.h",
-      "crypto/poly1305/internal.h",
-      "crypto/pool/internal.h",
-      "crypto/test/abi_test.h",
-      "crypto/test/file_test.h",
-      "crypto/test/gtest_main.h",
-      "crypto/test/test_util.h",
-      "crypto/test/wycheproof_util.h",
-      "crypto/trust_token/internal.h",
-      "crypto/x509/internal.h",
-      "crypto/x509v3/ext_dat.h",
-      "crypto/x509v3/internal.h",
       ],
     cmd = """
       #!/bin/bash
       for header in $(SRCS); do
         if [[ "$$header" != *"/patch/"* ]]; then
-          $(location tools/generate.h.sh) $(location tools/uncomment.sh) $$header "$${header#*/*/*/*/}" $(RULEDIR)
+          $(location //bssl-compat:tools/generate.h.sh) $(location //bssl-compat:tools/uncomment.sh) $$header "$${header#*/src/}" $(RULEDIR) `dirname $(location //bssl-compat:patch/bazel)`
         fi
       done
-      """, # TODO: the condition in cmd does not work
+      """,
     visibility = ["//visibility:public"],
 )
 
@@ -339,6 +361,7 @@ genrule(
     name = "bssl_gen_sources",
     tools = [
         "//bssl-compat:bssl_gen_headers",
+        "//bssl-compat:bssl_gen_crypto_headers",
         "//bssl-compat:tools/generate.c.sh",
     ],
     srcs = glob([
@@ -683,6 +706,7 @@ cc_library(
 	hdrs = [
       ":ossl_gen",
       ":bssl_gen_headers",
+      ":bssl_gen_crypto_headers",
   ] + glob([
       "include/ext/openssl/*.h",
       "source/*.h",
@@ -694,7 +718,7 @@ cc_library(
   ],
 	deps = [
     "//bssl-compat:ossl_gen",
-    "//bssl-compat:bssl_gen_headers",
+    "//bssl-compat:bssl_gen_crypto_headers",
     "//bssl-compat:bssl_gen_sources",
     "@openssl//:openssl-lib",
   ],

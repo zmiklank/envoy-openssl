@@ -10,8 +10,8 @@ UNCOMMENT_SCRIPT="${1?"UNCOMMENT_SCRIPT not specified"}"
 SRC_FILE="${2?"SRC_FILE not specified"}" # e.g. crypto/err/internal.h
 DST_FILE="${3?"DST_FILE not specified"}" # e.g. source/crypto/err/internal.h
 DST_DIR="${4?"DST_DIR not specified"}"
+PATCH_DIR="${5?"PATCH_DIR not specified"}"
 
-PATCH_DIR="./bssl-compat/patch"
 
 #
 # Check/Ensure the inputs and outputs exist
