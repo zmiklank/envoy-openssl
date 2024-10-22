@@ -169,6 +169,7 @@ genrule(
       --src-incl "openssl/*.h" \
       --src-skip openssl/asn1_mac.h \
       --src-skip "openssl/opensslconf-*.h" \
+      --relative-incl \
       --verbose \
       --output $(RULEDIR) \
       --prefix ossl \
