@@ -6,16 +6,16 @@ TOP_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 HDR_FILE="${1?"HDR_FILE not specified"}"
 shift
 
-function info {
-  true || cmake -E cmake_echo_color --cyan "$1"
+info() {
+  printf "\033[0;36m%s\033[0m\n" "$1"  # Cyan
 }
 
-function warn {
-  false || cmake -E cmake_echo_color --yellow "$1"
+warn() {
+  printf "\033[0;33mWARNING: %s\033[0m\n" "$1" >&2  # Yellow
 }
 
-function error {
-  cmake -E cmake_echo_color --red "ERROR: $1"
+error() {
+  printf "\033[0;31mERROR: %s\033[0m\n" "$1" >&2  # Red
   exit 1
 }
 

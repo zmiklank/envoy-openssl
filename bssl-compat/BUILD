@@ -247,7 +247,7 @@ genrule(
       #!/bin/bash
       for header in $(SRCS); do
         if [[ "$$header" != *"/patch/"* ]]; then
-          $(location //bssl-compat:tools/generate.h.sh) $(location //bssl-compat:tools/uncomment.sh) $$header "$${header#*/src/}" $(RULEDIR) `dirname $(location //bssl-compat:patch/bazel)`
+          $(location //bssl-compat:tools/generate.h.sh) $(location //bssl-compat:tools/uncomment.sh) $$header "$${header#*/src/}" $(RULEDIR) `dirname $(location //bssl-compat:patch/bazel.file)`
         fi
       done
       """, # TODO: the condition in cmd does not work
@@ -351,7 +351,7 @@ genrule(
       #!/bin/bash
       for header in $(SRCS); do
         if [[ "$$header" != *"/patch/"* ]]; then
-          $(location //bssl-compat:tools/generate.h.sh) $(location //bssl-compat:tools/uncomment.sh) $$header "$${header#*/src/}" $(RULEDIR) `dirname $(location //bssl-compat:patch/bazel)`
+          $(location //bssl-compat:tools/generate.h.sh) $(location //bssl-compat:tools/uncomment.sh) $$header "$${header#*/src/}" $(RULEDIR) `dirname $(location //bssl-compat:patch/bazel.file)`
         fi
       done
       """,
@@ -359,14 +359,45 @@ genrule(
 )
 
 genrule(
+    name = "bssl_gen_crypto_sources",
+    tools = [
+        "//bssl-compat:bssl_gen_crypto_headers",
+        "//bssl-compat:tools/generate.h.sh",
+        "//bssl-compat:tools/uncomment.sh",
+    ],
+    srcs = glob([
+      "source/crypto/mem.c",
+      "source/crypto/bytestring/cbs.c",
+      "source/crypto/bytestring/cbb.c",
+      "source/ssl/ssl_x509.cc",
+      "patch/**",
+      ]),
+    outs = [
+        "source/crypto/mem.c",
+        "source/crypto/bytestring/cbs.c",
+        "source/crypto/bytestring/cbb.c",
+        "source/ssl/ssl_x509.cc",
+      ],
+    cmd = """
+      #!/bin/bash
+      set -x
+      for c_file in $(SRCS); do
+        if [[ "$$c_file" != *"/patch/"* ]]; then
+          $(location //bssl-compat:tools/generate.h.sh) $(location //bssl-compat:tools/uncomment.sh) $$c_file $$c_file $(RULEDIR) `dirname $(location //bssl-compat:patch/bazel.file)`
+        fi
+      done
+      """,
+    visibility = ["//visibility:public"],
+)
+genrule(
     name = "bssl_gen_sources",
     tools = [
         "//bssl-compat:bssl_gen_headers",
-        "//bssl-compat:bssl_gen_crypto_headers",
         "//bssl-compat:tools/generate.c.sh",
     ],
     srcs = glob([
-      "third_party/boringssl/src/include/**"
+      "third_party/boringssl/src/include/**",
+      "patch/**",
       ]),
     outs = [
       "source/ASN1_IA5STRING_free.c",
@@ -684,6 +715,7 @@ genrule(
       "source/X509_VERIFY_PARAM_get_flags.c",
       "source/X509_VERIFY_PARAM_set_flags.c",
       "source/X509_VERIFY_PARAM_set1.c",
+
       ],
     cmd = """
       for c_file in $(OUTS); do
@@ -700,6 +732,8 @@ cc_library(
   linkstatic = True,
 	srcs = [
       ":bssl_gen_sources",
+      ":bssl_gen_crypto_sources",
+      ":ossl_gen",
 	] + glob([
       "source/*.c",
       "source/*.cc",
@@ -717,12 +751,24 @@ cc_library(
     "./", # because of crypto headerfiles
     "source/",
   ],
+  linkopts = [
+    "-L$(GENDIR)/bssl-compat",
+    "-lssl",
+    "-lcrypto",
+  ],
 	deps = [
     "//bssl-compat:ossl_gen",
+    "//bssl-compat:bssl_gen_crypto_sources",
     "//bssl-compat:bssl_gen_crypto_headers",
     "//bssl-compat:bssl_gen_sources",
     "@openssl//:openssl-lib",
+    #"//bssl-compat:boringssl_ssl",
+    #"//bssl-compat:boringssl_crypto",
+
   ],
+  visibility = [
+    "//visibility:public",
+  ]
 )
 alias(
     name = "crypto",
@@ -735,4 +781,3 @@ alias(
     actual = ":bssl-compat",
     visibility = ["//visibility:public"],
 )
-
