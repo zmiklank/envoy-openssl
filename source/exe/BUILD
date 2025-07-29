@@ -66,6 +66,7 @@ envoy_cc_library(
         ":platform_impl_lib",
         ":scm_impl_lib",
         "//source/server:options_lib",
+        "//bssl-compat:bssl-compat",
     ],
 )
 
